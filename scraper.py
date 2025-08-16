@@ -1,7 +1,7 @@
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup # helps to extract data like text, links, tables, etc.from web pages.
 import re
-from urllib.parse import urljoin
+from urllib.parse import urljoin # safely combine a base URL with a relative URL into a full, absolute URL.
 from models import Product, FAQ, BrandContext
 
 

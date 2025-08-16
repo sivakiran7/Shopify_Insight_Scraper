@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException # FastAPI → creates the API app.
+# HTTPException → handles errors in a clean RESTful way.
 from scraper import ShopifyScraper
 from models import BrandContext
 
