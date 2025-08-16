@@ -7,18 +7,18 @@ from models import Product, FAQ, BrandContext
 
 class ShopifyScraper:
 
-    def __init__(self, base_url: str):
+    def __init__(self, base_url: str):   
         if not base_url.startswith("http"):
             base_url = "https://" + base_url
         self.base_url = base_url.rstrip("/")
 
-    def fetch_html(self, path: str = "") -> BeautifulSoup:
+    def fetch_html(self, path: str = "") -> BeautifulSoup:  
         url = urljoin(self.base_url, path)
         resp = requests.get(url, timeout=10)
         resp.raise_for_status()
         return BeautifulSoup(resp.text, "html.parser")
 
-    def fetch_json(self, path: str):
+    def fetch_json(self, path: str):      
         url = urljoin(self.base_url, path)
         resp = requests.get(url, timeout=10)
         resp.raise_for_status()
@@ -26,7 +26,7 @@ class ShopifyScraper:
 
     def get_products(self) -> list[Product]:
         try:
-            data = self.fetch_json("/products.json")
+            data = self.fetch_json("/products.json") # append the product details list
             products = []
             for p in data.get("products", []):
                 products.append(Product(
@@ -37,7 +37,7 @@ class ShopifyScraper:
                     url=urljoin(self.base_url, f"/products/{p.get('handle')}")
                 ))
             return products
-        except Exception:
+        except Exception: # if no product is present return empty list
             return []
 
     def get_hero_products(self) -> list[Product]:
@@ -61,7 +61,7 @@ class ShopifyScraper:
 
     def get_policies(self):
         return {
-            "privacy_policy": self.extract_text_from_page("/policies/privacy-policy"),
+            "privacy_policy": self.extract_text_from_page("/policies/privacy-policy"),   # fetching data from the web policy data
             "return_refund_policy": self.extract_text_from_page("/policies/refund-policy")
         }
 
@@ -72,7 +72,7 @@ class ShopifyScraper:
             for q in soup.find_all(["h2", "h3"]):
                 answer = q.find_next("p")
                 if answer:
-                    faqs.append(FAQ(question=q.get_text(strip=True), answer=answer.get_text(strip=True)))
+                    faqs.append(FAQ(question=q.get_text(strip=True), answer=answer.get_text(strip=True))) # append faqs if text is true
             return faqs
         except Exception:
             return []
@@ -80,13 +80,13 @@ class ShopifyScraper:
     def get_social_handles(self) -> list[str]:
         soup = self.fetch_html("/")
         links = [a["href"] for a in soup.find_all("a", href=True)]
-        socials = [l for l in links if any(s in l for s in ["facebook", "instagram", "tiktok", "twitter", "youtube"])]
+        socials = [l for l in links if any(s in l for s in ["facebook", "instagram", "tiktok", "twitter", "youtube"])] # return media link which are in these list
         return socials
 
     def get_contact_details(self) -> list[str]:
         soup = self.fetch_html("/pages/contact")
         text = soup.get_text(" ", strip=True)
-        emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", text)
+        emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", text)  # writing an regular expression for extracting the emails 
         phones = re.findall(r"\+?\d[\d\-\s]{7,}\d", text)
         return list(set(emails + phones))
 
@@ -104,6 +104,7 @@ class ShopifyScraper:
             return soup.title.string.strip()
         return None
 
+# combine all functions and extracting teh data in an brand  context
     def get_brand_context(self) -> BrandContext:
         policies = self.get_policies()
         return BrandContext(
