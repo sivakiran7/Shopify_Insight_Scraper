@@ -1,11 +1,9 @@
 from typing import List, Optional
 from pydantic import BaseModel
 
-
 class FAQ(BaseModel):
     question: str
     answer: str
-
 
 class Product(BaseModel):
     title: str
@@ -13,7 +11,6 @@ class Product(BaseModel):
     price: Optional[str]
     image: Optional[str]
     url: Optional[str]
-
 
 class BrandContext(BaseModel):
     brand_name: Optional[str]
